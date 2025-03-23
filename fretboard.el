@@ -1,11 +1,11 @@
-;;; fretboard.el --- Visualize guitar scales and chord shapes on a fretboard -*- lexical-binding: t -*-
+;;; fretboard.el --- Visualize guitar scales and chord shapes on a fretboard -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Skye Freeman
 
 ;; Author: Skye Freeman
 ;; URL: https://github.com/user/fretboard
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "26.1") (s "1.13.0") (dash "2.19.0"))
+;; Package-Requires: ((emacs "27.1") (s "1.13.0") (dash "2.19.0"))
 ;; Keywords: music, guitar, tools
 (defconst fretboard--version "1.0.0")
 

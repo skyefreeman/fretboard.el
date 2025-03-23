@@ -2,7 +2,7 @@
 
 An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 
-![Fretboard usage example](fretboard-usage-example.gif)
+![Fretboard usage example](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-usage.gif)
 
 ## Features
 

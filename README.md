@@ -1,6 +1,6 @@
 # fretboard.el
 
-An Emacs package for visualizing guitar scales, chords, and navigating the fretboard.
+An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 
 ## Features
 

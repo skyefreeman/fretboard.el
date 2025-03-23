@@ -1,9 +1,60 @@
-;;; fretboard.el --- Summary: Guitar fretboard visualization
+;;; fretboard.el --- Visualize guitar scales and chord shapes on a fretboard -*- lexical-binding: t -*-
+
+;; Copyright (C) 2025 Skye Freeman
+
+;; Author: Skye Freeman
+;; URL: https://github.com/user/fretboard
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "26.1") (s "1.13.0") (dash "2.19.0"))
+;; Keywords: music, guitar, tools
+(defconst fretboard--version "1.0.0")
+
+;; This file is NOT part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 ;;; Commentary:
+
+;; `fretboard` provides an interactive way to visualize guitar scales and chord
+;; shapes directly in Emacs.  It displays a text-based representation of a
+;; guitar fretboard with highlighted notes for different scales and chords.
+;;
+;; The package supports various features:
+;; - Display scales and chords with highlighted notes on the fretboard
+;; - Support for various scale types (major, minor, pentatonic, etc.)
+;; - Support for various chord types (major, minor, 7th, etc.)
+;; - Multiple tuning options (standard, drop-D, open-G, etc.)
+;; - Interactive navigation between notes, scales, and chord types
+;;
+;; Usage:
+;; - M-x fretboard - Display the fretboard, defaulting to the A major scale.
+;; - M-x fretboard-display-scale - Display a specific scale on the fretboard
+;; - M-x fretboard-display-chord - Display a specific chord on the fretboard
+;; - M-x fretboard-set-tuning - Change the guitar tuning
+;;
+;; Once viewing a fretboard, you can navigate with the following keys:
+;; - n/p: Navigate to next/previous note (same scale/chord type)
+;; - k/j: Navigate to next/previous scale/chord type (same note)
+;; - d: Toggle between scale and chord display
+;; - t: Toggle between different tunings
+;; - s/c: Switch to scale/chord display
+;; - q: Close all fretboard buffers
+
 ;;; Code:
 
-(require 's nil t)
-(require 'dash nil t)
+(require 's)
+(require 'dash)
 
 (defvar fretboard-tunings '((:name "standard" :notes ("E" "A" "D" "G" "B" "E"))
 			    (:name "half-step-down" :notes ("D#" "G#" "C#" "F#" "A#" "D#"))

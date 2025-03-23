@@ -39,6 +39,13 @@ Format is a plist with :type, :root, and :subtype keys.")
 		     fretboard-tunings)
 	     :notes))
 
+(defun fretboard-get-name-for-tuning-notes (notes)
+  "Get the open string notes for the giving tuning NAME."
+  (plist-get (-first (lambda (tuning)
+		       (equalp notes (plist-get tuning :notes)))
+		     fretboard-tunings)
+	     :name))
+
 (defun fretboard-tuning-names ()
   "Get the name of all supported tunings."
   (-map (lambda (tuning)
@@ -117,7 +124,9 @@ Optional FRETS parameter determines number of frets to display (default 12)."
     (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
       (insert (format "Fretboard - %s %s Scale\n" root scale-type))
-      (insert (format "Tuning - %s\n\n" fretboard-tuning-current))
+      (insert (format "Tuning - %s %s\n\n"
+		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
+		      fretboard-tuning-current))
       (insert (format "Notes: %s\n\n" (s-join ", " scale-notes)))
       (insert fretboard)
       (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning")
@@ -164,7 +173,9 @@ Optional FRETS parameter determines number of frets to display (default 12)."
     (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
       (insert (format "Fretboard - %s %s Chord\n" root chord-type))
-      (insert (format "Tuning - %s\n\n" fretboard-tuning-current))
+      (insert (format "Tuning - %s %s\n\n"
+		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
+		      fretboard-tuning-current))
       (insert (format "Notes: %s\n\n" (s-join ", " chord-notes)))
       (insert fretboard)
       (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning")
@@ -321,6 +332,13 @@ Optional FRETS parameter determines number of frets to display (default 12)."
     (let* ((root (plist-get fretboard-current-display :root)))
       (fretboard-display-chord root "major"))))
 
+(defun fretboard-quit-all ()
+  "Close all fretboard buffers."
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (when (string-match "^\\*Fretboard:" (buffer-name buffer))
+      (kill-buffer buffer))))
+
 (define-derived-mode fretboard-mode special-mode "Fretboard"
   "Major mode for displaying guitar fretboard visualizations."
   (define-key fretboard-mode-map (kbd "n") 'fretboard-next)
@@ -330,7 +348,8 @@ Optional FRETS parameter determines number of frets to display (default 12)."
   (define-key fretboard-mode-map (kbd "d") 'fretboard-toggle-display-type)
   (define-key fretboard-mode-map (kbd "t") 'fretboard-toggle-tuning-type)
   (define-key fretboard-mode-map (kbd "s") 'fretboard-switch-to-scale)
-  (define-key fretboard-mode-map (kbd "c") 'fretboard-switch-to-chord))
+  (define-key fretboard-mode-map (kbd "c") 'fretboard-switch-to-chord)
+  (define-key fretboard-mode-map (kbd "q") 'fretboard-quit-all))
 
 (provide 'fretboard)
 ;;; fretboard.el ends here

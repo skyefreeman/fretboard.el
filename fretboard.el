@@ -180,7 +180,7 @@ Optional FRETS parameter determines number of frets to display (default 12)."
 		      fretboard-tuning-current))
       (insert (format "Notes: %s\n\n" (s-join ", " scale-notes)))
       (insert fretboard)
-      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning")
+      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nq=quit")
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 
@@ -229,7 +229,7 @@ Optional FRETS parameter determines number of frets to display (default 12)."
 		      fretboard-tuning-current))
       (insert (format "Notes: %s\n\n" (s-join ", " chord-notes)))
       (insert fretboard)
-      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning")
+      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nq=quit")
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 

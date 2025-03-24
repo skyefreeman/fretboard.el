@@ -13,15 +13,23 @@ An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 
 ## Installation
 
-### Manual Installation
+### Manual
 
-1. Download `fretboard.el` to your local machine
+1. Download or clone the `fretboard.el` repo onto your local machine.
 2. Add the following to your Emacs configuration:
 
 ```elisp
 ;; Add the directory containing fretboard.el to your load-path
 (add-to-list 'load-path "/path/to/directory/containing/fretboard.el")
 (require 'fretboard)
+```
+
+### Straight
+
+```elisp
+(use-package fretboard
+  :straight (:host github :repo "skyefreeman/fretboard.el")
+  :defer t)
 ```
 
 ## Usage

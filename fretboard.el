@@ -396,6 +396,9 @@ Optional FRETS parameter determines number of frets to display (default 12)."
 
 (define-derived-mode fretboard-mode special-mode "Fretboard"
   "Major mode for displaying guitar fretboard visualizations."
+  ;; Hide cursor
+  (setq cursor-type nil)
+  ;; Set up keybindings
   (define-key fretboard-mode-map (kbd "n") 'fretboard-next)
   (define-key fretboard-mode-map (kbd "p") 'fretboard-previous)
   (define-key fretboard-mode-map (kbd "k") 'fretboard-next-type)

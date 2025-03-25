@@ -1,4 +1,4 @@
-# fretboard.el
+# 🎸 fretboard.el
 
 An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 

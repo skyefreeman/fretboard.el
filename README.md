@@ -41,6 +41,15 @@ An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 - `M-x fretboard-display-chord` - Display a chord on the fretboard
 - `M-x fretboard-set-tuning` - Change the guitar tuning
 
+### Customization
+
+You can customize the appearance and behavior of fretboard.el:
+
+```elisp
+;; Change the number of frets displayed (default is 12)
+(setq fretboard-fret-count 24)
+```
+
 ### Navigation
 
 When viewing a fretboard display, you can use the following keys:

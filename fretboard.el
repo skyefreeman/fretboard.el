@@ -69,6 +69,11 @@
 (defvar fretboard-notes '("A" "A#" "B" "C" "C#" "D" "D#" "E" "F" "F#" "G" "G#")
   "All available notes in western music.")
 
+(defcustom fretboard-fret-count 12
+  "Number of frets to display on the fretboard."
+  :type 'integer
+  :group 'fretboard)
+
 (defface fretboard-root-face
   '((t :foreground "#FF0000" :weight bold))
   "Face for the root note of a scale or chord.")
@@ -116,8 +121,8 @@ Format is a plist with :type, :root, and :subtype keys.")
 
 (defun fretboard-render (highlight-notes &optional frets)
   "Render a guitar fretboard with HIGHLIGHT-NOTES marked.
-Optional FRETS parameter determines number of frets to display (default 12)."
-  (let* ((fret-count (or frets 12))
+Optional FRETS parameter determines number of frets to display (default is the value of `fretboard-fret-count`)."
+  (let* ((fret-count (or frets fretboard-fret-count))
          ;; First item in highlight-notes is the root note
          (root-note (car highlight-notes)))
     (with-temp-buffer

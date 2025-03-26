@@ -102,7 +102,7 @@ Format is a plist with :type, :root, and :subtype keys.")
 (defun fretboard-get-name-for-tuning-notes (notes)
   "Get the open string NOTES for the giving tuning NAME."
   (plist-get (-first (lambda (tuning)
-		       (equalp notes (plist-get tuning :notes)))
+		       (equal notes (plist-get tuning :notes)))
 		     fretboard-tunings)
 	     :name))
 

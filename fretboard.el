@@ -63,7 +63,7 @@
 			    (:name "dadgad" :notes ("D" "A" "D" "G" "A" "D")))
   "List of guitar tunings.")
 
-(defvar fretboard-tuning-current (fretboard-set-tuning "standard")
+(defvar fretboard-tuning-current '("E" "A" "D" "G" "B" "E")
   "Current tuning in use for fretboard display.")
 
 (defvar fretboard-notes '("A" "A#" "B" "C" "C#" "D" "D#" "E" "F" "F#" "G" "G#")

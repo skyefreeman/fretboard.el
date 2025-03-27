@@ -63,8 +63,6 @@
 			    (:name "dadgad" :notes ("D" "A" "D" "G" "A" "D")))
   "List of guitar tunings.")
 
-(defvar fretboard-navigation-string "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\n,=next-mode\nm=previous-mode\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
-
 (defvar fretboard-tuning-current '("E" "A" "D" "G" "B" "E")
   "Current tuning in use for fretboard display.")
 
@@ -123,24 +121,19 @@ Format is a plist with :type, :root, and :subtype keys.")
     (setq fretboard-interval-table interval-table)))
 
 (defun fretboard-modal-shift-highlighted-notes (lst n)
-  (dotimes (i n lst)
-    (setq lst (append (cdr lst) (list (car lst))))))
-
-(defun fretboard-get-intervals (semitones)
-  (mapcar (lambda (index)
-            (-find (lambda (mapping)
-                     (= (plist-get mapping :value) index))
-                   fretboard-interval-table))
-          semitones))
+  (let ((rotations (mod n (length lst))))
+    (dotimes (_ rotations lst)
+      (setq lst (append (cdr lst) (list (car lst)))))))
 
 (defun fretboard-rotate-notes (root-index modal-shift)
-  (let* ((index (+ modal-shift (mod root-index (length fretboard-notes)) )))
+  (let* ((len (length fretboard-notes))
+         (index (mod (+ modal-shift (mod root-index len)) len)))
     (append (nthcdr index fretboard-notes)
             (-take index fretboard-notes))))
 
 (defun fretboard-note-to-interval (note rotated-notes)
   (let ((index (-find-index (lambda (n) (string= n note))
-                              rotated-notes)))
+                            rotated-notes)))
     (when index
       (plist-get
        (-find (lambda (mapping)
@@ -187,7 +180,6 @@ Optional FRETS parameter determines number of frets to display (default is the v
                               (length fretboard-notes))
                          fretboard-notes))
                   intervals))
-         (interval-table (fretboard-get-intervals intervals))
          (modal-shift (nth fretboard-mode-counter intervals))
          (rotated-notes (fretboard-rotate-notes root-index modal-shift))
          (root-note (car rotated-notes)))
@@ -214,13 +206,13 @@ Optional FRETS parameter determines number of frets to display (default is the v
             (let* ((note (fretboard-get-note-at-position string-num fret))
                    (highlighted (member note highlight-notes))
                    (formatted-note (if (= (length note) 2)
-                                      (format " %s " note)
-                                    (format " %s  " note)))
+                                       (format " %s " note)
+                                     (format " %s  " note)))
 
                    (relative-interval (fretboard-note-to-interval note rotated-notes))
                    (formatted-relative-interval (if (= (length relative-interval) 2)
-                                      (format " %s " relative-interval)
-                                    (format " %s  " relative-interval)))
+                                                    (format " %s " relative-interval)
+                                                  (format " %s  " relative-interval)))
                    (is-root (string= note root-note)))
 
               (cond
@@ -267,13 +259,14 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (insert (format "Mode - %s \n" (nth fretboard-mode-counter fretboard-modes)))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
-      (insert fretboard-navigation-string)
+      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\n,=next-mode\nm=previous-mode\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 
 (defun fretboard-display-chord (root chord-type)
   "Display the fretboard highlighting the ROOT note and CHORD-TYPE."
   (interactive
+   (setq fretboard-mode-counter 0)
    (list (completing-read "Root note: " fretboard-notes nil t)
          (completing-read "Chord type: " fretboard-chord-types nil t)))
   
@@ -309,10 +302,9 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (insert (format "Tuning - %s %s\n\n"
 		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
 		      fretboard-tuning-current))
-      (insert (format "Mode - %s \n" (nth fretboard-mode-counter fretboard-modes)))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
-      (insert fretboard-navigation-string)
+      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 
@@ -415,17 +407,21 @@ Optional FRETS parameter determines number of frets to display (default is the v
 
 (defun fretboard-next-mode ()
   (interactive)
-  (if (< fretboard-mode-counter (length fretboard-modes))
-      (setq fretboard-mode-counter (+ fretboard-mode-counter 1)))
-  (fretboard-refresh-display)
-  )
+  (let* ((type (plist-get fretboard-current-display :type)))
+    (cond
+     ((eq type 'scale)
+      (setq fretboard-mode-counter (mod (+ fretboard-mode-counter 1) (length fretboard-modes)))
+      (fretboard-refresh-display))
+     )))
 
 (defun fretboard-previous-mode ()
   (interactive)
-  (if (< 0 fretboard-mode-counter)
-      (setq fretboard-mode-counter (- fretboard-mode-counter 1)))
-  (fretboard-refresh-display)
-  )
+  (let* ((type (plist-get fretboard-current-display :type)))
+    (cond
+     ((eq type 'scale)
+      (setq fretboard-mode-counter (mod (1- fretboard-mode-counter) (length fretboard-modes)))
+      (fretboard-refresh-display))
+     )))
 
 
 (defun fretboard-refresh-display ()
@@ -458,8 +454,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
   (interactive)
   (when fretboard-tuning-current
     (let* ((note-list (-map (lambda (tuning)
-		    (plist-get tuning :notes))
-		  fretboard-tunings))
+		              (plist-get tuning :notes))
+		            fretboard-tunings))
 	   (index (-elem-index fretboard-tuning-current note-list))
 	   (next-index (if (< index (- (length note-list) 1))
 			   (+ index 1)
@@ -478,6 +474,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
 (defun fretboard-switch-to-chord ()
   "Switch to chord display for the current root."
   (interactive)
+  (setq fretboard-mode-counter 0)
   (when fretboard-current-display
     (let* ((root (plist-get fretboard-current-display :root)))
       (fretboard-display-chord root "major"))))

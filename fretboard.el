@@ -63,6 +63,8 @@
 			    (:name "dadgad" :notes ("D" "A" "D" "G" "A" "D")))
   "List of guitar tunings.")
 
+(defvar fretboard-navigation-string "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\n,=next-mode\nm=previous-mode\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
+
 (defvar fretboard-tuning-current '("E" "A" "D" "G" "B" "E")
   "Current tuning in use for fretboard display.")
 
@@ -77,6 +79,11 @@
 
 (defvar fretboard-notes '("A" "A#" "B" "C" "C#" "D" "D#" "E" "F" "F#" "G" "G#")
   "All available notes in western music.")
+
+(defvar fretboard-modes '("Ionian" "Dorian" "Phrygian" "Lydian" "Mixolydian" "Aeolian" "Locrian")
+  "All available modes in western music.")
+
+(defvar fretboard-mode-counter 0)
 
 (defcustom fretboard-fret-count 12
   "Number of frets to display on the fretboard."
@@ -115,6 +122,10 @@ Format is a plist with :type, :root, and :subtype keys.")
             interval-table))
     (setq fretboard-interval-table interval-table)))
 
+(defun fretboard-modal-shift-highlighted-notes (lst n)
+  (dotimes (i n lst)
+    (setq lst (append (cdr lst) (list (car lst))))))
+
 (defun fretboard-get-intervals (semitones)
   (mapcar (lambda (index)
             (-find (lambda (mapping)
@@ -122,8 +133,8 @@ Format is a plist with :type, :root, and :subtype keys.")
                    fretboard-interval-table))
           semitones))
 
-(defun fretboard-rotate-notes (root-index)
-  (let* ((index (mod root-index (length fretboard-notes))))
+(defun fretboard-rotate-notes (root-index modal-shift)
+  (let* ((index (+ modal-shift (mod root-index (length fretboard-notes)) )))
     (append (nthcdr index fretboard-notes)
             (-take index fretboard-notes))))
 
@@ -157,9 +168,6 @@ Format is a plist with :type, :root, and :subtype keys.")
 	  (plist-get tuning :name))
 	fretboard-tunings))
 
-(defun fretboard-absolute-to-relative (note notes)
-  (-elem-index note notes))
-
 (defun fretboard-get-note-at-position (string fret)
   "Get the note at the given STRING and FRET position."
   (let* ((open-note (nth (- 6 string) fretboard-tuning-current))
@@ -179,11 +187,12 @@ Optional FRETS parameter determines number of frets to display (default is the v
                               (length fretboard-notes))
                          fretboard-notes))
                   intervals))
-         (root-note (car highlight-notes))
          (interval-table (fretboard-get-intervals intervals))
-         (rotated-notes (fretboard-rotate-notes root-index)))
+         (modal-shift (nth fretboard-mode-counter intervals))
+         (rotated-notes (fretboard-rotate-notes root-index modal-shift))
+         (root-note (car rotated-notes)))
 
-    (setq fretboard-notes-current highlight-notes)
+    (setq fretboard-notes-current (fretboard-modal-shift-highlighted-notes highlight-notes fretboard-mode-counter))
 
     (with-temp-buffer
       ;; Header
@@ -207,6 +216,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
                    (formatted-note (if (= (length note) 2)
                                       (format " %s " note)
                                     (format " %s  " note)))
+
                    (relative-interval (fretboard-note-to-interval note rotated-notes))
                    (formatted-relative-interval (if (= (length relative-interval) 2)
                                       (format " %s " relative-interval)
@@ -254,9 +264,10 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (insert (format "Tuning - %s %s\n\n"
 		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
 		      fretboard-tuning-current))
+      (insert (format "Mode - %s \n" (nth fretboard-mode-counter fretboard-modes)))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
-      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
+      (insert fretboard-navigation-string)
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 
@@ -298,9 +309,10 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (insert (format "Tuning - %s %s\n\n"
 		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
 		      fretboard-tuning-current))
+      (insert (format "Mode - %s \n" (nth fretboard-mode-counter fretboard-modes)))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
-      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
+      (insert fretboard-navigation-string)
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 
@@ -401,6 +413,21 @@ Optional FRETS parameter determines number of frets to display (default is the v
        ((eq type 'chord)
         (fretboard-display-chord root prev-type))))))
 
+(defun fretboard-next-mode ()
+  (interactive)
+  (if (< fretboard-mode-counter (length fretboard-modes))
+      (setq fretboard-mode-counter (+ fretboard-mode-counter 1)))
+  (fretboard-refresh-display)
+  )
+
+(defun fretboard-previous-mode ()
+  (interactive)
+  (if (< 0 fretboard-mode-counter)
+      (setq fretboard-mode-counter (- fretboard-mode-counter 1)))
+  (fretboard-refresh-display)
+  )
+
+
 (defun fretboard-refresh-display ()
   "Relayout the current fretboard."
   (interactive)
@@ -471,6 +498,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
   (define-key fretboard-mode-map (kbd "p") 'fretboard-previous)
   (define-key fretboard-mode-map (kbd "k") 'fretboard-next-type)
   (define-key fretboard-mode-map (kbd "j") 'fretboard-previous-type)
+  (define-key fretboard-mode-map (kbd ",") 'fretboard-next-mode)
+  (define-key fretboard-mode-map (kbd "m") 'fretboard-previous-mode)
   (define-key fretboard-mode-map (kbd "d") 'fretboard-toggle-display-type)
   (define-key fretboard-mode-map (kbd "t") 'fretboard-toggle-tuning-type)
   (define-key fretboard-mode-map (kbd "r") 'fretboard-toggle-relative-notes)

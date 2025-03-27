@@ -249,7 +249,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
     
     ;; Store current display info for navigation
     (setq fretboard-current-display (list :type 'scale :root root :subtype scale-type))
-    
+
     (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
       (insert (format "Fretboard - %s %s Scale\n" root scale-type))
@@ -259,7 +259,9 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (insert (format "Mode - %s \n" (nth fretboard-mode-counter fretboard-modes)))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
-      (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\n,=next-mode\nm=previous-mode\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
+      (insert (if (string= scale-type "major")
+                  "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\n,=next-mode\nm=previous-mode\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit"
+                "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit"))
       (fretboard-mode)
       (switch-to-buffer buffer-name))))
 
@@ -438,12 +440,13 @@ Optional FRETS parameter determines number of frets to display (default is the v
   (interactive)
   (when fretboard-current-display
     (let* ((type (plist-get fretboard-current-display :type))
-           (root (plist-get fretboard-current-display :root)))
+           (root (plist-get fretboard-current-display :root))
+           (subtype (or (plist-get fretboard-current-display :subtype) "major")))
       (cond
        ((eq type 'scale)
-        (fretboard-display-scale root "major"))
+        (fretboard-display-scale root subtype))
        ((eq type 'chord)
-        (fretboard-display-chord root "major"))))))
+        (fretboard-display-chord root subtype))))))
 
 (defun fretboard-toggle-display-type ()
   "Toggle between scale and chord display."

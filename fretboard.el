@@ -370,6 +370,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
 (defun fretboard-next-type ()
   "Cycle through the types (scales or chords) for the current root."
   (interactive)
+  (setq fretboard-mode-counter 0)
   (when fretboard-current-display
     (let* ((type (plist-get fretboard-current-display :type))
            (root (plist-get fretboard-current-display :root))
@@ -389,6 +390,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
 (defun fretboard-previous-type ()
   "Cycle through the types (scales or chords) for the current root."
   (interactive)
+  (setq fretboard-mode-counter 0)
   (when fretboard-current-display
     (let* ((type (plist-get fretboard-current-display :type))
            (root (plist-get fretboard-current-display :root))
@@ -407,22 +409,29 @@ Optional FRETS parameter determines number of frets to display (default is the v
 
 (defun fretboard-next-mode ()
   (interactive)
-  (let* ((type (plist-get fretboard-current-display :type)))
+  (let* ((type (plist-get fretboard-current-display :type))
+         (subtype (plist-get fretboard-current-display :subtype)))
     (cond
      ((eq type 'scale)
-      (setq fretboard-mode-counter (mod (+ fretboard-mode-counter 1) (length fretboard-modes)))
-      (fretboard-refresh-display))
-     )))
+      (if (string= subtype "major")
+          (progn
+            (setq fretboard-mode-counter (mod (1+ fretboard-mode-counter) (length fretboard-modes))))
+        (setq fretboard-mode-counter 0))
+      (fretboard-refresh-display)
+      ))))
 
 (defun fretboard-previous-mode ()
   (interactive)
-  (let* ((type (plist-get fretboard-current-display :type)))
+  (let* ((type (plist-get fretboard-current-display :type))
+         (subtype (plist-get fretboard-current-display :subtype)))
     (cond
      ((eq type 'scale)
-      (setq fretboard-mode-counter (mod (1- fretboard-mode-counter) (length fretboard-modes)))
-      (fretboard-refresh-display))
-     )))
-
+      (if (string= subtype "major")
+          (progn
+            (setq fretboard-mode-counter (mod (1- fretboard-mode-counter) (length fretboard-modes))))
+        (setq fretboard-mode-counter 0))
+      (fretboard-refresh-display)
+      ))))
 
 (defun fretboard-refresh-display ()
   "Relayout the current fretboard."

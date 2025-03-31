@@ -32,6 +32,30 @@ An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
   :defer t)
 ```
 
+### Elpaca
+
+```elisp
+(use-package fretboard
+  :ensure (:host github :repo "skyefreeman/fretboard.el")
+  :defer t)
+```
+
+### Doom
+
+```elisp
+(package! fretboard
+  :recipe (:type git :host github :repo "skyefreeman/fretboard.el" :branch "main" :files ("*.el"))
+  :defer t)
+```
+
+### package.el
+
+```elisp
+(use-package fretboard
+  :vc (:fetcher github :repo skyefreeman/fretboard.el)
+  :defer t)
+```
+
 ## Usage
 
 ### Basic Commands

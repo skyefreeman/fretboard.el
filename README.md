@@ -105,6 +105,8 @@ When viewing a fretboard display, you can use the following keys:
 - Harmonic Minor
 - Melodic Minor
 
+![Pentatonic Minor Scale](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-pentatonic-scale.png)
+
 ## Available Chords
 
 - Major
@@ -122,6 +124,8 @@ When viewing a fretboard display, you can use the following keys:
 - 9th
 - Minor 9th
 
+![A Major 7th Chord](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-maj7-chord.png)
+
 ## Available Modes
 
 When viewing the major scale you can toggle between the 7 diatonic [modes](https://en.wikipedia.org/wiki/Mode_(music)). 
@@ -134,6 +138,8 @@ When viewing the major scale you can toggle between the 7 diatonic [modes](https
 - Aeolian (Natural Minor)
 - Locrian
 
+![A Lydian Mode](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-a-lydian-mode.png)
+
 ## Available Tunings
 
 - Standard (E A D G B E)
@@ -141,6 +147,8 @@ When viewing the major scale you can toggle between the 7 diatonic [modes](https
 - Open G (D G D G B D)
 - DADGAD (D A D G A D)
 - Half step down (Eb Ab Db Gb Bb Eb)
+
+![DADGAD Tuning](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-dadgad-tuning.png)
 
 ## License
 

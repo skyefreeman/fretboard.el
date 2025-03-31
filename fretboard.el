@@ -139,14 +139,15 @@ This is used for generating modal scales relative to the root note."
 
 (defun fretboard-note-to-interval (note rotated-notes)
   "Convert a NOTE to its interval name relative to the first note in ROTATED-NOTES.
-Returns the interval name (e.g., '1', 'm3', '5') for the given note."
+Returns the interval name (e.g., 1, m3, 5) for the given note."
   (let ((index (-find-index (lambda (n) (string= n note))
                             rotated-notes)))
     (when index
       (plist-get
        (-find (lambda (mapping)
                 (= (plist-get mapping :value) index))
-              fretboard-interval-table) :name))))
+              fretboard-interval-table)
+       :name))))
 
 
 (defun fretboard-get-notes-for-tuning (name)
@@ -276,10 +277,9 @@ Optionally, determine the number of FRETS to display."
 (defun fretboard-display-chord (root chord-type)
   "Display the fretboard highlighting the ROOT note and CHORD-TYPE."
   (interactive
-   (setq fretboard-mode-counter 0)
    (list (completing-read "Root note: " fretboard-notes nil t)
          (completing-read "Chord type: " fretboard-chord-types nil t)))
-
+  (setq fretboard-mode-counter 0)
   (let* ((chord-intervals (cond
                            ((string= chord-type "major") '(0 4 7))
                            ((string= chord-type "minor") '(0 3 7))

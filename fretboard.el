@@ -433,8 +433,7 @@ For other scale types, this resets to the default mode (mode counter to 0)."
           (progn
             (setq fretboard-mode-counter (mod (1+ fretboard-mode-counter) (length fretboard-modes))))
         (setq fretboard-mode-counter 0))
-      (fretboard-refresh-display)
-      ))))
+      (fretboard-refresh-display)))))
 
 (defun fretboard-previous-mode ()
   "Cycle to the previous mode of the current scale.
@@ -449,8 +448,7 @@ For other scale types, this resets to the default mode (mode counter to 0)."
           (progn
             (setq fretboard-mode-counter (mod (1- fretboard-mode-counter) (length fretboard-modes))))
         (setq fretboard-mode-counter 0))
-      (fretboard-refresh-display)
-      ))))
+      (fretboard-refresh-display)))))
 
 (defun fretboard-refresh-display ()
   "Relayout the current fretboard."
@@ -470,8 +468,7 @@ For other scale types, this resets to the default mode (mode counter to 0)."
   (interactive)
   (when fretboard-current-display
     (let* ((type (plist-get fretboard-current-display :type))
-           (root (plist-get fretboard-current-display :root))
-           )
+           (root (plist-get fretboard-current-display :root)))
       (cond
        ((eq type 'scale)
         (fretboard-display-chord root "major"))

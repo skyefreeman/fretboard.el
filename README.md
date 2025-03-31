@@ -84,8 +84,11 @@ When viewing a fretboard display, you can use the following keys:
 | `p` | Previous note (same scale/chord type) |
 | `k` | Next scale/chord type (same note) |
 | `j` | Previous scale/chord type (same note) |
+| `,` | Next mode (same scale, only for major scale) |
+| `m` | Previous mode (same scale, only for major scale) |
 | `d` | Toggle between scale and chord display |
 | `t` | Toggle between different tunings |
+| `r` | Toggle between note names and relative intervals |
 | `s` | Switch to scale display |
 | `c` | Switch to chord display |
 | `q` | Close all fretboard buffers |

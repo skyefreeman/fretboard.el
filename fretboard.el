@@ -3,11 +3,11 @@
 ;; Copyright (C) 2025 Skye Freeman
 
 ;; Author: Skye Freeman
-;; URL: https://github.com/user/fretboard
+;; URL: https://github.com/skyefreeman/fretboard.el
 ;; Version: 1.0.1
 ;; Package-Requires: ((emacs "27.1") (s "1.13.0") (dash "2.19.0"))
 ;; Keywords: music, guitar, tools
-(defconst fretboard--version "1.0.0")
+(defconst fretboard--version "1.0.1")
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -46,8 +46,10 @@
 ;; Once viewing a fretboard, you can navigate with the following keys:
 ;; - n/p: Navigate to next/previous note (same scale/chord type)
 ;; - k/j: Navigate to next/previous scale/chord type (same note)
+;; - ,/m: Navigate to next/previous mode (same scale, only for major scale)
 ;; - d: Toggle between scale and chord display
 ;; - t: Toggle between different tunings
+;; - r: Toggle between note names and relative intervals
 ;; - s/c: Switch to scale/chord display
 ;; - q: Close all fretboard buffers
 
@@ -57,10 +59,10 @@
 (require 'dash)
 
 (defvar fretboard-tunings '((:name "standard" :notes ("E" "A" "D" "G" "B" "E"))
-			    (:name "half-step-down" :notes ("D#" "G#" "C#" "F#" "A#" "D#"))
-			    (:name "drop-d" :notes ("D" "A" "D" "G" "B" "E"))
-			    (:name "open-g" :notes ("D" "G" "D" "G" "B" "D"))
-			    (:name "dadgad" :notes ("D" "A" "D" "G" "A" "D")))
+                            (:name "half-step-down" :notes ("D#" "G#" "C#" "F#" "A#" "D#"))
+                            (:name "drop-d" :notes ("D" "A" "D" "G" "B" "E"))
+                            (:name "open-g" :notes ("D" "G" "D" "G" "B" "D"))
+                            (:name "dadgad" :notes ("D" "A" "D" "G" "A" "D")))
   "List of guitar tunings.")
 
 (defvar fretboard-tuning-current '("E" "A" "D" "G" "B" "E")
@@ -144,22 +146,22 @@ Format is a plist with :type, :root, and :subtype keys.")
 (defun fretboard-get-notes-for-tuning (name)
   "Get the open string notes for the giving tuning NAME."
   (plist-get (-first (lambda (tuning)
-		       (string= name (plist-get tuning :name)))
-		     fretboard-tunings)
-	     :notes))
+                       (string= name (plist-get tuning :name)))
+                     fretboard-tunings)
+             :notes))
 
 (defun fretboard-get-name-for-tuning-notes (notes)
   "Get the open string NOTES for the giving tuning NAME."
   (plist-get (-first (lambda (tuning)
-		       (equal notes (plist-get tuning :notes)))
-		     fretboard-tunings)
-	     :name))
+                       (equal notes (plist-get tuning :notes)))
+                     fretboard-tunings)
+             :name))
 
 (defun fretboard-tuning-names ()
   "Get the name of all supported tunings."
   (-map (lambda (tuning)
-	  (plist-get tuning :name))
-	fretboard-tunings))
+          (plist-get tuning :name))
+        fretboard-tunings))
 
 (defun fretboard-get-note-at-position (string fret)
   "Get the note at the given STRING and FRET position."
@@ -200,7 +202,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
         (let ((string-num (1+ string)))
           ;; String number
           (insert (format "%d " string-num))
-          
+
           ;; Each fret
           (dotimes (fret (1+ fret-count))
             (let* ((note (fretboard-get-note-at-position string-num fret))
@@ -230,23 +232,23 @@ Optional FRETS parameter determines number of frets to display (default is the v
   (interactive
    (list (completing-read "Root note: " fretboard-notes nil t)
          (completing-read "Scale type: " fretboard-scale-types nil t)))
-  
+
   (let* ((scale-intervals (cond
-			   ((string= scale-type "major") '(0 2 4 5 7 9 11))
-			   ((string= scale-type "minor") '(0 2 3 5 7 8 10))
-			   ((string= scale-type "pentatonic-major") '(0 2 4 7 9))
-			   ((string= scale-type "pentatonic-minor") '(0 3 5 7 10))
-			   ((string= scale-type "blues") '(0 3 5 6 7 10))
-			   ((string= scale-type "harmonic-minor") '(0 2 3 5 7 8 11))
-			   ((string= scale-type "melodic-minor") '(0 2 3 5 7 9 11))
-			   (t '(0 2 4 5 7 9 11)))) ; default to major
+                           ((string= scale-type "major") '(0 2 4 5 7 9 11))
+                           ((string= scale-type "minor") '(0 2 3 5 7 8 10))
+                           ((string= scale-type "pentatonic-major") '(0 2 4 7 9))
+                           ((string= scale-type "pentatonic-minor") '(0 3 5 7 10))
+                           ((string= scale-type "blues") '(0 3 5 6 7 10))
+                           ((string= scale-type "harmonic-minor") '(0 2 3 5 7 8 11))
+                           ((string= scale-type "melodic-minor") '(0 2 3 5 7 9 11))
+                           (t '(0 2 4 5 7 9 11)))) ; default to major
          (root-index (-elem-index root fretboard-notes))
          (buffer-name (format "*Fretboard: %s %s*" root scale-type))
-	 (existing-buffer (get-buffer buffer-name))
+         (existing-buffer (get-buffer buffer-name))
          (fretboard (fretboard-render scale-intervals root-index)))
-    
+
     (if existing-buffer (kill-buffer existing-buffer))
-    
+
     ;; Store current display info for navigation
     (setq fretboard-current-display (list :type 'scale :root root :subtype scale-type))
 
@@ -254,8 +256,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (erase-buffer)
       (insert (format "Fretboard - %s %s Scale\n" root scale-type))
       (insert (format "Tuning - %s %s\n\n"
-		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
-		      fretboard-tuning-current))
+                      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
+                      fretboard-tuning-current))
       (insert (format "Mode - %s \n" (nth fretboard-mode-counter fretboard-modes)))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
@@ -271,7 +273,7 @@ Optional FRETS parameter determines number of frets to display (default is the v
    (setq fretboard-mode-counter 0)
    (list (completing-read "Root note: " fretboard-notes nil t)
          (completing-read "Chord type: " fretboard-chord-types nil t)))
-  
+
   (let* ((chord-intervals (cond
                            ((string= chord-type "major") '(0 4 7))
                            ((string= chord-type "minor") '(0 3 7))
@@ -290,20 +292,20 @@ Optional FRETS parameter determines number of frets to display (default is the v
                            (t '(0 4 7)))) ; default to major
          (root-index (-elem-index root fretboard-notes))
          (buffer-name (format "*Fretboard: %s%s Chord*" root chord-type))
-	 (existing-buffer (get-buffer buffer-name))
+         (existing-buffer (get-buffer buffer-name))
          (fretboard (fretboard-render chord-intervals root-index)))
 
     (if existing-buffer (kill-buffer existing-buffer))
-    
+
     ;; Store current display info for navigation
     (setq fretboard-current-display (list :type 'chord :root root :subtype chord-type))
-    
+
     (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
       (insert (format "Fretboard - %s %s Chord\n" root chord-type))
       (insert (format "Tuning - %s %s\n\n"
-		      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
-		      fretboard-tuning-current))
+                      (fretboard-get-name-for-tuning-notes fretboard-tuning-current)
+                      fretboard-tuning-current))
       (insert (format "Notes: %s\n\n" (s-join ", " fretboard-notes-current)))
       (insert fretboard)
       (insert "\nNavigate:\n\nn=next\np=previous\nk=next-type\nj=previous-type\ns=scale\nc=chord\nt=tuning\nr=relative\nq=quit")
@@ -314,8 +316,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
   "Display the fretboard using the current values of FRETBOARD-CURRENT-DISPLAY.  Defaults to the notes of the A major scale."
   (interactive)
   (let ((type (or (plist-get fretboard-current-display :type) 'scale))
-	(root (or (plist-get fretboard-current-display :root) "A"))
-	(subtype (or (plist-get fretboard-current-display :subtype) "major")))
+        (root (or (plist-get fretboard-current-display :root) "A"))
+        (subtype (or (plist-get fretboard-current-display :subtype) "major")))
     (cond
      ((eq type 'scale)
       (fretboard-display-scale root subtype))
@@ -331,8 +333,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
   "Set the fretboard TUNING to one of the predefined tunings."
   (interactive
    (list (completing-read "Select tuning: "
-			  (fretboard-tuning-names)
-			  nil t)))
+                          (fretboard-tuning-names)
+                          nil t)))
   (let ((notes (fretboard-get-notes-for-tuning tuning)))
     (setq fretboard-tuning-current notes)
     (message "Tuning set to: %s" (s-join " " notes))))
@@ -378,8 +380,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
            (root (plist-get fretboard-current-display :root))
            (subtype (plist-get fretboard-current-display :subtype))
            (types-list (if (eq type 'scale)
-			   fretboard-scale-types
-			 fretboard-chord-types))
+                           fretboard-scale-types
+                         fretboard-chord-types))
            (type-idx (-elem-index subtype types-list))
            (next-type-idx (mod (1+ type-idx) (length types-list)))
            (next-type (nth next-type-idx types-list)))
@@ -398,8 +400,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
            (root (plist-get fretboard-current-display :root))
            (subtype (plist-get fretboard-current-display :subtype))
            (types-list (if (eq type 'scale)
-			   fretboard-scale-types
-			 fretboard-chord-types))
+                           fretboard-scale-types
+                         fretboard-chord-types))
            (type-idx (-elem-index subtype types-list))
            (prev-type-idx (mod (1- type-idx) (length types-list)))
            (prev-type (nth prev-type-idx types-list)))
@@ -466,13 +468,13 @@ Optional FRETS parameter determines number of frets to display (default is the v
   (interactive)
   (when fretboard-tuning-current
     (let* ((note-list (-map (lambda (tuning)
-		              (plist-get tuning :notes))
-		            fretboard-tunings))
-	   (index (-elem-index fretboard-tuning-current note-list))
-	   (next-index (if (< index (- (length note-list) 1))
-			   (+ index 1)
-			 0))
-	   (next-tuning (nth next-index fretboard-tunings)))
+                              (plist-get tuning :notes))
+                            fretboard-tunings))
+           (index (-elem-index fretboard-tuning-current note-list))
+           (next-index (if (< index (- (length note-list) 1))
+                           (+ index 1)
+                         0))
+           (next-tuning (nth next-index fretboard-tunings)))
       (fretboard-set-tuning (plist-get next-tuning :name))
       (fretboard-refresh-display))))
 

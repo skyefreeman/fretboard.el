@@ -2,7 +2,7 @@
 
 An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 
-![Fretboard usage example](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-usage.gif)
+![Fretboard usage example](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/examples/fretboard-example-usage.gif)
 
 ## Features
 
@@ -105,7 +105,7 @@ When viewing a fretboard display, you can use the following keys:
 - Harmonic Minor
 - Melodic Minor
 
-![Pentatonic Minor Scale](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-pentatonic-scale.png)
+![Pentatonic Minor Scale](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/examples/fretboard-example-pentatonic-scale.png)
 
 ## Available Chords
 
@@ -124,7 +124,7 @@ When viewing a fretboard display, you can use the following keys:
 - 9th
 - Minor 9th
 
-![A Major 7th Chord](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-maj7-chord.png)
+![A Major 7th Chord](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/examples/fretboard-example-maj7-chord.png)
 
 ## Available Modes
 
@@ -138,7 +138,7 @@ When viewing the major scale you can toggle between the 7 diatonic [modes](https
 - Aeolian (Natural Minor)
 - Locrian
 
-![A Lydian Mode](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-a-lydian-mode.png)
+![A Lydian Mode](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/examples/fretboard-example-a-lydian-mode.png)
 
 ## Available Tunings
 
@@ -148,7 +148,7 @@ When viewing the major scale you can toggle between the 7 diatonic [modes](https
 - DADGAD (D A D G A D)
 - Half step down (Eb Ab Db Gb Bb Eb)
 
-![DADGAD Tuning](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/fretboard-example-dadgad-tuning.png)
+![DADGAD Tuning](https://raw.githubusercontent.com/skyefreeman/fretboard.el/main/examples/fretboard-example-dadgad-tuning.png)
 
 ## License
 

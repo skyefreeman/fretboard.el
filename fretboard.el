@@ -72,10 +72,10 @@
   "Current scale in use for fretboard display.")
 
 (defvar fretboard-interval-table nil
-  "List of intervals")
+  "List of intervals.")
 
 (defvar fretboard-display-relative-notes nil
-  "Show notes either in notes, or relative to the root")
+  "Show notes either in notes, or relative to the root.")
 
 (defvar fretboard-notes '("A" "A#" "B" "C" "C#" "D" "D#" "E" "F" "F#" "G" "G#")
   "All available notes in western music.")
@@ -123,17 +123,23 @@ Format is a plist with :type, :root, and :subtype keys.")
     (setq fretboard-interval-table interval-table)))
 
 (defun fretboard-modal-shift-highlighted-notes (lst n)
+  "Rotate the list LST by N positions.
+This is used to shift the highlighted notes when displaying different modes."
   (let ((rotations (mod n (length lst))))
     (dotimes (_ rotations lst)
       (setq lst (append (cdr lst) (list (car lst)))))))
 
 (defun fretboard-rotate-notes (root-index modal-shift)
+  "Create a new list of notes starting at ROOT-INDEX with MODAL-SHIFT applied.
+This is used for generating modal scales relative to the root note."
   (let* ((len (length fretboard-notes))
          (index (mod (+ modal-shift (mod root-index len)) len)))
     (append (nthcdr index fretboard-notes)
             (-take index fretboard-notes))))
 
 (defun fretboard-note-to-interval (note rotated-notes)
+  "Convert a NOTE to its interval name relative to the first note in ROTATED-NOTES.
+Returns the interval name (e.g., '1', 'm3', '5') for the given note."
   (let ((index (-find-index (lambda (n) (string= n note))
                             rotated-notes)))
     (when index
@@ -171,8 +177,8 @@ Format is a plist with :type, :root, and :subtype keys.")
     (nth note-index fretboard-notes)))
 
 (defun fretboard-render (intervals root-index &optional frets)
-  "Render a guitar fretboard with HIGHLIGHT-NOTES marked.
-Optional FRETS parameter determines number of frets to display (default is the value of `fretboard-fret-count`)."
+  "Render a guitar fretboard with the note INTERVALS and ROOT-INDEX marked.
+Optionally, determine the number of FRETS to display."
   (if (equal fretboard-interval-table nil) (fretboard-construct-interval-table))
 
   (let* ((fret-count (or frets fretboard-fret-count))
@@ -313,7 +319,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (switch-to-buffer buffer-name))))
 
 (defun fretboard ()
-  "Display the fretboard using the current values of FRETBOARD-CURRENT-DISPLAY.  Defaults to the notes of the A major scale."
+  "Display the fretboard using the current values of FRETBOARD-CURRENT-DISPLAY.
+Defaults to the notes of the A major scale."
   (interactive)
   (let ((type (or (plist-get fretboard-current-display :type) 'scale))
         (root (or (plist-get fretboard-current-display :root) "A"))
@@ -325,6 +332,8 @@ Optional FRETS parameter determines number of frets to display (default is the v
       (fretboard-display-chord root subtype)))))
 
 (defun fretboard-toggle-relative-notes ()
+  "Toggle between displaying note names and intervals relative to the root.
+When in relative mode, notes are shown as intervals instead of note names."
   (interactive)
   (setq fretboard-display-relative-notes (not fretboard-display-relative-notes))
   (fretboard-refresh-display))
@@ -412,6 +421,9 @@ Optional FRETS parameter determines number of frets to display (default is the v
         (fretboard-display-chord root prev-type))))))
 
 (defun fretboard-next-mode ()
+  "Cycle to the next mode of the current scale.
+Only applies to major scales, cycling through Ionian, Dorian, Phrygian, etc.
+For other scale types, this resets to the default mode (mode counter to 0)."
   (interactive)
   (let* ((type (plist-get fretboard-current-display :type))
          (subtype (plist-get fretboard-current-display :subtype)))
@@ -425,6 +437,9 @@ Optional FRETS parameter determines number of frets to display (default is the v
       ))))
 
 (defun fretboard-previous-mode ()
+  "Cycle to the previous mode of the current scale.
+Only applies to major scales, cycling through Ionian, Dorian, Phrygian, etc.
+For other scale types, this resets to the default mode (mode counter to 0)."
   (interactive)
   (let* ((type (plist-get fretboard-current-display :type))
          (subtype (plist-get fretboard-current-display :subtype)))

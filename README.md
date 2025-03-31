@@ -6,10 +6,12 @@ An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 
 ## Features
 
-- Display scales and chords on a guitar fretboard
-- Navigate through different notes and scale/chord types
+- Display scales, chords and modes on a guitar fretboard.
+- Cycle between chord tonalities.
+- Toggle between the 7 diatonic modes.
+- View the fretboard notes by either name or intervals.
 - Support for multiple tunings
-- Interactive navigation mode
+- Interactive navigation mode.
 
 ## Installation
 
@@ -119,6 +121,18 @@ When viewing a fretboard display, you can use the following keys:
 - Minor 6th
 - 9th
 - Minor 9th
+
+## Available Modes
+
+When viewing the major scale you can toggle between the 7 diatonic [modes](https://en.wikipedia.org/wiki/Mode_(music)). 
+
+- Ionian (Major)
+- Dorian
+- Phrygian
+- Lydian
+- Mixolydian
+- Aeolian (Natural Minor)
+- Locrian
 
 ## Available Tunings
 

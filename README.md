@@ -1,3 +1,5 @@
+[![MELPA](https://melpa.org/packages/fretboard-badge.svg)](https://melpa.org/#/fretboard)
+
 # 🎸 fretboard.el
 
 An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
@@ -24,6 +26,12 @@ An Emacs package for visualizing notes, scales and chords on a guitar fretboard.
 ;; Add the directory containing fretboard.el to your load-path
 (add-to-list 'load-path "/path/to/directory/containing/fretboard.el")
 (require 'fretboard)
+```
+
+### Melpa
+
+```elisp
+(use-package fretboard :ensure t)
 ```
 
 ### Straight
